@@ -26,6 +26,11 @@ urlpatterns = [
     path('stock', stock_barang),
     path('stock_bawah', stock_bawah),
     path('kategori/<int:category_id>', kategori_barang),
+    path('statkategori', statKategori),
+    path('supplier', supplier),
+    path('allproduct', allproduct),
+
+
 
     path('', index),
 

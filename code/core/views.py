@@ -9,25 +9,25 @@ def index(request):
 
 def testing(request):
     admin = User.objects.create_user(
-        username="admin_7", email="admin7@gmail.com",
-        password="admin7"
+        username="admin_8", email="admin8@gmail.com",
+        password="admin8"
     )
     category = Categories.objects.create(
-        name="Printer",
-        description="Alat cetak",
+        name="Alat Tulis",
+        description="Peralatan kantor dan sekolah",
         created_by=admin
     )
     supllier = Supplier.objects.create(
-        name="Johan",
-        contact_info="Johan.jr",
+        name="Mulyono",
+        contact_info="Mulyono.jk",
         created_by=admin
     )
 
     Item.objects.create(
-        name="Printer Canon",
-        description="Alat cetak",
-        price="7500000",
-        quantity="4",
+        name="Pensil 2B",
+        description="Alat tulis kantor dan sekolah",
+        price="15000",
+        quantity="30",
         category_id=category,
         supplier_id=supllier,
         created_by=admin
@@ -114,3 +114,43 @@ def kategori_barang(request, category_id):
         }
         result.append(record)
         return JsonResponse(result, safe=False)
+    
+def statKategori(request):
+    data_kategori = Categories.objects.annotate(
+        total_barang=Count('item'),
+        total_nilai_stock=Sum(F('item__price')*F('item__quantity')),
+        avg_harga=Avg('item__price')
+    )
+
+    data = {
+        'stat_kategori': list(data_kategori.values('id', 'name', 'total_barang', 'total_nilai_stock', 'avg_harga'))
+    }
+
+    return JsonResponse(data, safe=False)
+
+def supplier(request):
+    data_supplier = Supplier.objects.annotate(
+        total_barang=Count('item'),
+        nilai_stock=Sum(F('item__price')* F('item__quantity'))
+    )
+
+    data = {
+        'supplier_data' : list(data_supplier.values('name', 'total_barang', 'nilai_stock'))
+    }
+
+    return JsonResponse(data, safe=False)
+
+def allproduct(request):
+    total_barang = Item.objects.aggregate(total_quantity=Sum('quantity'))['total_quantity']
+    total_nilai_stock = Item.objects.aggregate(total_nilai=Sum(F('price')*F('quantity')))['total_nilai']
+    total_kategori = Categories.objects.count()
+    total_supplier = Supplier.objects.count()
+
+    data = {
+        'total_barang': total_barang,
+        'total_nilai_stock': total_nilai_stock,
+        'total_kategori': total_kategori,
+        'total_supplier': total_supplier
+    }
+
+    return JsonResponse(data, safe=False)

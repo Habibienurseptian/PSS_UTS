@@ -27,7 +27,7 @@ class Supplier(models.Model):
         verbose_name_plural = "Pengirim"
 
     def __str__(self) -> str:
-        return self.name
+        return self.name 
 
 class Item(models.Model):
     name = models.CharField('Nama Barang', max_length=100)
@@ -45,4 +45,4 @@ class Item(models.Model):
         verbose_name_plural = "Barang"
 
     def __str__(self) -> str:
-        return self.name
+        return self.name+" : "+self.price
